@@ -1,0 +1,20 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "aa0fbf5fd650f2b31db0ee94dd9156ea01147be98130fd61269b9c1d54779958": {
+      "source": {
+        "path": "CloudTrailStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "600627330313-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-600627330313-us-east-1",
+          "objectKey": "aa0fbf5fd650f2b31db0ee94dd9156ea01147be98130fd61269b9c1d54779958.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-file-publishing-role-600627330313-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

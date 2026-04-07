@@ -1,0 +1,398 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "GuardDutyStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GuardDutyStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GuardDutyStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://600627330313/us-east-1",
+      "properties": {
+        "templateFile": "GuardDutyStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-deploy-role-600627330313-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-cfn-exec-role-600627330313-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-600627330313-us-east-1/404695578a1568361e4275f6d25a8369ca459bd2a0409a1f1e5fff6e7aaca176.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GuardDutyStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-lookup-role-600627330313-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GuardDutyStack.assets"
+      ],
+      "metadata": {
+        "/GuardDutyStack/GuardDutyDetector": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GuardDutyDetector"
+          }
+        ],
+        "/GuardDutyStack/DetectorId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DetectorId"
+          }
+        ],
+        "/GuardDutyStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/GuardDutyStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/GuardDutyStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "GuardDutyStack"
+    },
+    "CloudTrailStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CloudTrailStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CloudTrailStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://600627330313/us-east-1",
+      "properties": {
+        "templateFile": "CloudTrailStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-deploy-role-600627330313-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-cfn-exec-role-600627330313-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-600627330313-us-east-1/aa0fbf5fd650f2b31db0ee94dd9156ea01147be98130fd61269b9c1d54779958.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CloudTrailStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-lookup-role-600627330313-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CloudTrailStack.assets"
+      ],
+      "metadata": {
+        "/CloudTrailStack/CloudTrailBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudTrailBucket98B0BFE1"
+          }
+        ],
+        "/CloudTrailStack/CloudTrailBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudTrailBucketPolicy2A856177"
+          }
+        ],
+        "/CloudTrailStack/CloudTrailLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudTrailLogGroup343A29D6"
+          }
+        ],
+        "/CloudTrailStack/IncidentResponseTrail/LogsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IncidentResponseTrailLogsRoleD730F77F"
+          }
+        ],
+        "/CloudTrailStack/IncidentResponseTrail/LogsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IncidentResponseTrailLogsRoleDefaultPolicyD7BD8251"
+          }
+        ],
+        "/CloudTrailStack/IncidentResponseTrail/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IncidentResponseTrail4AE503B2"
+          }
+        ],
+        "/CloudTrailStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CloudTrailStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CloudTrailStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CloudTrailStack"
+    },
+    "SecurityHubStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SecurityHubStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SecurityHubStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://600627330313/us-east-1",
+      "properties": {
+        "templateFile": "SecurityHubStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-deploy-role-600627330313-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-cfn-exec-role-600627330313-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-600627330313-us-east-1/3036536b96b29dc3c15c60b2b29f9a3da915f3c8dc8644237b0c0803366357cd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SecurityHubStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-lookup-role-600627330313-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "GuardDutyStack",
+        "SecurityHubStack.assets"
+      ],
+      "metadata": {
+        "/SecurityHubStack/SecurityHub": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityHub"
+          }
+        ],
+        "/SecurityHubStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/SecurityHubStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SecurityHubStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SecurityHubStack"
+    },
+    "NotificationStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "NotificationStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "NotificationStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://600627330313/us-east-1",
+      "properties": {
+        "templateFile": "NotificationStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-deploy-role-600627330313-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-cfn-exec-role-600627330313-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-600627330313-us-east-1/ba4e916b3be3fa90f25f37726e1f1e2e329546f8a53235056b14b0b626723c3b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "NotificationStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-lookup-role-600627330313-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "NotificationStack.assets"
+      ],
+      "metadata": {
+        "/NotificationStack/SecurityAlertTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityAlertTopic8D84EA7A"
+          }
+        ],
+        "/NotificationStack/SecurityAlertTopic/kevinlupera@gmail.com/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityAlertTopickevinluperagmailcom64FDAB43"
+          }
+        ],
+        "/NotificationStack/SNSTopicArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SNSTopicArn"
+          }
+        ],
+        "/NotificationStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/NotificationStack/Exports/Output{\"Ref\":\"SecurityAlertTopic8D84EA7A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefSecurityAlertTopic8D84EA7A77A8D013"
+          }
+        ],
+        "/NotificationStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/NotificationStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "NotificationStack"
+    },
+    "ResponseStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ResponseStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ResponseStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://600627330313/us-east-1",
+      "properties": {
+        "templateFile": "ResponseStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-deploy-role-600627330313-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-cfn-exec-role-600627330313-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-600627330313-us-east-1/86086abde18c6cdff981031fb8d114faabbede2e3e8494ea991a0e0d47b417fa.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ResponseStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::600627330313:role/cdk-hnb659fds-lookup-role-600627330313-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SecurityHubStack",
+        "NotificationStack",
+        "ResponseStack.assets"
+      ],
+      "metadata": {
+        "/ResponseStack/IsolationLambdaRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsolationLambdaRole3A5917D9"
+          }
+        ],
+        "/ResponseStack/IsolationLambdaRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsolationLambdaRoleDefaultPolicy21098625"
+          }
+        ],
+        "/ResponseStack/IsolationLambdaLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsolationLambdaLogGroup1BB3FD4B"
+          }
+        ],
+        "/ResponseStack/IsolationLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsolationLambda633FFA8B"
+          }
+        ],
+        "/ResponseStack/HighSeverityFindingRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighSeverityFindingRule62BCB3FF"
+          }
+        ],
+        "/ResponseStack/HighSeverityFindingRule/AllowEventRuleResponseStackIsolationLambda4DBF33CC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighSeverityFindingRuleAllowEventRuleResponseStackIsolationLambda4DBF33CC47E9D521"
+          }
+        ],
+        "/ResponseStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/ResponseStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ResponseStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ResponseStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

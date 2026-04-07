@@ -1,0 +1,90 @@
+{
+ "Description": "Topic SNS con suscripción email para alertas de seguridad",
+ "Resources": {
+  "SecurityAlertTopic8D84EA7A": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Alertas de Incidentes de Seguridad AWS",
+    "TopicName": "incident-response-alerts"
+   },
+   "Metadata": {
+    "aws:cdk:path": "NotificationStack/SecurityAlertTopic/Resource"
+   }
+  },
+  "SecurityAlertTopickevinluperagmailcom64FDAB43": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": "kevinlupera@gmail.com",
+    "Protocol": "email",
+    "TopicArn": {
+     "Ref": "SecurityAlertTopic8D84EA7A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "NotificationStack/SecurityAlertTopic/kevinlupera@gmail.com/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02ISw6CMBBAz8K+HaEx4QAewATcmzLUZEDbpjMjC8LdTcPG1fs46Poe2sZvbHFe7Zsm2EfxuBq/8ZMjw/5ImdDcXvGUUSfGQlkoxXr/+6jjrpJVqg2BkxYMh4lpDrDw5escdFdom4WJbNEo9AkwnPwBtIk1ro0AAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "NotificationStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "SNSTopicArn": {
+   "Description": "ARN del topic SNS para alertas de seguridad",
+   "Value": {
+    "Ref": "SecurityAlertTopic8D84EA7A"
+   },
+   "Export": {
+    "Name": "IncidentResponseSNSTopicArn"
+   }
+  },
+  "ExportsOutputRefSecurityAlertTopic8D84EA7A77A8D013": {
+   "Value": {
+    "Ref": "SecurityAlertTopic8D84EA7A"
+   },
+   "Export": {
+    "Name": "NotificationStack:ExportsOutputRefSecurityAlertTopic8D84EA7A77A8D013"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

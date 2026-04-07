@@ -1,0 +1,1046 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "GuardDutyStack": {
+        "id": "GuardDutyStack",
+        "path": "GuardDutyStack",
+        "children": {
+          "GuardDutyDetector": {
+            "id": "GuardDutyDetector",
+            "path": "GuardDutyStack/GuardDutyDetector",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::GuardDuty::Detector",
+              "aws:cdk:cloudformation:props": {
+                "enable": true,
+                "features": [
+                  {
+                    "name": "S3_DATA_EVENTS",
+                    "status": "ENABLED"
+                  },
+                  {
+                    "name": "EKS_AUDIT_LOGS",
+                    "status": "ENABLED"
+                  },
+                  {
+                    "name": "EBS_MALWARE_PROTECTION",
+                    "status": "ENABLED"
+                  }
+                ],
+                "findingPublishingFrequency": "FIFTEEN_MINUTES"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_guardduty.CfnDetector",
+              "version": "2.177.0"
+            }
+          },
+          "DetectorId": {
+            "id": "DetectorId",
+            "path": "GuardDutyStack/DetectorId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.177.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "GuardDutyStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "GuardDutyStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.6.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "GuardDutyStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.177.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "GuardDutyStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.177.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.177.0"
+        }
+      },
+      "CloudTrailStack": {
+        "id": "CloudTrailStack",
+        "path": "CloudTrailStack",
+        "children": {
+          "CloudTrailBucket": {
+            "id": "CloudTrailBucket",
+            "path": "CloudTrailStack/CloudTrailBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CloudTrailStack/CloudTrailBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "id": "ArchivarEnGlacierDespues365Dias",
+                          "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "GLACIER",
+                              "transitionInDays": 365
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    },
+                    "versioningConfiguration": {
+                      "status": "Enabled"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.177.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "CloudTrailStack/CloudTrailBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CloudTrailStack/CloudTrailBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "CloudTrailBucket98B0BFE1"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "s3:*",
+                              "Condition": {
+                                "Bool": {
+                                  "aws:SecureTransport": "false"
+                                }
+                              },
+                              "Effect": "Deny",
+                              "Principal": {
+                                "AWS": "*"
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "CloudTrailBucket98B0BFE1",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "CloudTrailBucket98B0BFE1",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": "s3:GetBucketAcl",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "cloudtrail.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "CloudTrailBucket98B0BFE1",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "s3:PutObject",
+                              "Condition": {
+                                "StringEquals": {
+                                  "s3:x-amz-acl": "bucket-owner-full-control"
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "cloudtrail.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CloudTrailBucket98B0BFE1",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "/AWSLogs/600627330313/*"
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "2.177.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.177.0"
+            }
+          },
+          "CloudTrailLogGroup": {
+            "id": "CloudTrailLogGroup",
+            "path": "CloudTrailStack/CloudTrailLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CloudTrailStack/CloudTrailLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/cloudtrail/incident-response",
+                    "retentionInDays": 365
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.177.0"
+            }
+          },
+          "IncidentResponseTrail": {
+            "id": "IncidentResponseTrail",
+            "path": "CloudTrailStack/IncidentResponseTrail",
+            "children": {
+              "LogsRole": {
+                "id": "LogsRole",
+                "path": "CloudTrailStack/IncidentResponseTrail/LogsRole",
+                "children": {
+                  "ImportLogsRole": {
+                    "id": "ImportLogsRole",
+                    "path": "CloudTrailStack/IncidentResponseTrail/LogsRole/ImportLogsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.177.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CloudTrailStack/IncidentResponseTrail/LogsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "cloudtrail.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.177.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CloudTrailStack/IncidentResponseTrail/LogsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CloudTrailStack/IncidentResponseTrail/LogsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "CloudTrailLogGroup343A29D6",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "IncidentResponseTrailLogsRoleDefaultPolicyD7BD8251",
+                            "roles": [
+                              {
+                                "Ref": "IncidentResponseTrailLogsRoleD730F77F"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.177.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.177.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.177.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CloudTrailStack/IncidentResponseTrail/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudTrail::Trail",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchLogsLogGroupArn": {
+                      "Fn::GetAtt": [
+                        "CloudTrailLogGroup343A29D6",
+                        "Arn"
+                      ]
+                    },
+                    "cloudWatchLogsRoleArn": {
+                      "Fn::GetAtt": [
+                        "IncidentResponseTrailLogsRoleD730F77F",
+                        "Arn"
+                      ]
+                    },
+                    "enableLogFileValidation": true,
+                    "eventSelectors": [
+                      {
+                        "dataResources": [
+                          {
+                            "type": "AWS::S3::Object",
+                            "values": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":s3:::"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "dataResources": [
+                          {
+                            "type": "AWS::Lambda::Function",
+                            "values": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":lambda"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "includeGlobalServiceEvents": true,
+                    "isLogging": true,
+                    "isMultiRegionTrail": true,
+                    "s3BucketName": {
+                      "Ref": "CloudTrailBucket98B0BFE1"
+                    },
+                    "trailName": "incident-response-trail"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudtrail.CfnTrail",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudtrail.Trail",
+              "version": "2.177.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CloudTrailStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CloudTrailStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.6.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CloudTrailStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.177.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CloudTrailStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.177.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.177.0"
+        }
+      },
+      "SecurityHubStack": {
+        "id": "SecurityHubStack",
+        "path": "SecurityHubStack",
+        "children": {
+          "SecurityHub": {
+            "id": "SecurityHub",
+            "path": "SecurityHubStack/SecurityHub",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::SecurityHub::Hub",
+              "aws:cdk:cloudformation:props": {
+                "autoEnableControls": true,
+                "enableDefaultStandards": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_securityhub.CfnHub",
+              "version": "2.177.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "SecurityHubStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SecurityHubStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.6.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "SecurityHubStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.177.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "SecurityHubStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.177.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.177.0"
+        }
+      },
+      "NotificationStack": {
+        "id": "NotificationStack",
+        "path": "NotificationStack",
+        "children": {
+          "SecurityAlertTopic": {
+            "id": "SecurityAlertTopic",
+            "path": "NotificationStack/SecurityAlertTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "NotificationStack/SecurityAlertTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "Alertas de Incidentes de Seguridad AWS",
+                    "topicName": "incident-response-alerts"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "2.177.0"
+                }
+              },
+              "kevinlupera@gmail.com": {
+                "id": "kevinlupera@gmail.com",
+                "path": "NotificationStack/SecurityAlertTopic/kevinlupera@gmail.com",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "NotificationStack/SecurityAlertTopic/kevinlupera@gmail.com/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "endpoint": "kevinlupera@gmail.com",
+                        "protocol": "email",
+                        "topicArn": {
+                          "Ref": "SecurityAlertTopic8D84EA7A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                      "version": "2.177.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "2.177.0"
+            }
+          },
+          "SNSTopicArn": {
+            "id": "SNSTopicArn",
+            "path": "NotificationStack/SNSTopicArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.177.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "NotificationStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "NotificationStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.6.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "NotificationStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"SecurityAlertTopic8D84EA7A\"}": {
+                "id": "Output{\"Ref\":\"SecurityAlertTopic8D84EA7A\"}",
+                "path": "NotificationStack/Exports/Output{\"Ref\":\"SecurityAlertTopic8D84EA7A\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.6.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "NotificationStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.177.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "NotificationStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.177.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.177.0"
+        }
+      },
+      "ResponseStack": {
+        "id": "ResponseStack",
+        "path": "ResponseStack",
+        "children": {
+          "IsolationLambdaRole": {
+            "id": "IsolationLambdaRole",
+            "path": "ResponseStack/IsolationLambdaRole",
+            "children": {
+              "ImportIsolationLambdaRole": {
+                "id": "ImportIsolationLambdaRole",
+                "path": "ResponseStack/IsolationLambdaRole/ImportIsolationLambdaRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.177.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ResponseStack/IsolationLambdaRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Rol con mínimo privilegio para la Lambda de aislamiento automático",
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      }
+                    ],
+                    "roleName": "incident-response-lambda-role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.177.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "ResponseStack/IsolationLambdaRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ResponseStack/IsolationLambdaRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "ec2:CreateSecurityGroup",
+                                "ec2:CreateTags",
+                                "ec2:DescribeInstances",
+                                "ec2:DescribeSecurityGroups",
+                                "ec2:ModifyInstanceAttribute",
+                                "ec2:RevokeSecurityGroupEgress"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*",
+                              "Sid": "EC2QuarantinePermissions"
+                            },
+                            {
+                              "Action": [
+                                "iam:AttachUserPolicy",
+                                "iam:CreatePolicy",
+                                "iam:GetUser"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*",
+                              "Sid": "IAMQuarantinePermissions"
+                            },
+                            {
+                              "Action": "sns:Publish",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::ImportValue": "NotificationStack:ExportsOutputRefSecurityAlertTopic8D84EA7A77A8D013"
+                              },
+                              "Sid": "SNSPublishAlerts"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "IsolationLambdaRoleDefaultPolicy21098625",
+                        "roles": [
+                          {
+                            "Ref": "IsolationLambdaRole3A5917D9"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.177.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.177.0"
+            }
+          },
+          "IsolationLambdaLogGroup": {
+            "id": "IsolationLambdaLogGroup",
+            "path": "ResponseStack/IsolationLambdaLogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ResponseStack/IsolationLambdaLogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/lambda/incident-response-isolate-resource",
+                    "retentionInDays": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.177.0"
+            }
+          },
+          "IsolationLambda": {
+            "id": "IsolationLambda",
+            "path": "ResponseStack/IsolationLambda",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "ResponseStack/IsolationLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "ResponseStack/IsolationLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.177.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "ResponseStack/IsolationLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.177.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.177.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ResponseStack/IsolationLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-600627330313-us-east-1",
+                      "s3Key": "915bc52230be12ea0e732c4af97715b3115557fcc8e99d4de97fea2fc743509a.zip"
+                    },
+                    "description": "Aisla automáticamente recursos comprometidos detectados por GuardDuty",
+                    "environment": {
+                      "variables": {
+                        "SNS_TOPIC_ARN": {
+                          "Fn::ImportValue": "NotificationStack:ExportsOutputRefSecurityAlertTopic8D84EA7A77A8D013"
+                        },
+                        "MIN_SEVERITY": "7",
+                        "AWS_REGION_NAME": "us-east-1"
+                      }
+                    },
+                    "functionName": "incident-response-isolate-resource",
+                    "handler": "index.handler",
+                    "loggingConfig": {
+                      "logGroup": {
+                        "Ref": "IsolationLambdaLogGroup1BB3FD4B"
+                      }
+                    },
+                    "memorySize": 256,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "IsolationLambdaRole3A5917D9",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs22.x",
+                    "timeout": 60
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+              "version": "2.177.0"
+            }
+          },
+          "HighSeverityFindingRule": {
+            "id": "HighSeverityFindingRule",
+            "path": "ResponseStack/HighSeverityFindingRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ResponseStack/HighSeverityFindingRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "Dispara respuesta automática ante hallazgos de GuardDuty de alta severidad (>=7)",
+                    "eventPattern": {
+                      "source": [
+                        "aws.guardduty"
+                      ],
+                      "detail-type": [
+                        "GuardDuty Finding"
+                      ],
+                      "detail": {
+                        "severity": [
+                          {
+                            "numeric": [
+                              ">=",
+                              7
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "name": "guardduty-high-severity-findings",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "IsolationLambda633FFA8B",
+                            "Arn"
+                          ]
+                        },
+                        "retryPolicy": {
+                          "maximumRetryAttempts": 2
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "2.177.0"
+                }
+              },
+              "AllowEventRuleResponseStackIsolationLambda4DBF33CC": {
+                "id": "AllowEventRuleResponseStackIsolationLambda4DBF33CC",
+                "path": "ResponseStack/HighSeverityFindingRule/AllowEventRuleResponseStackIsolationLambda4DBF33CC",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "IsolationLambda633FFA8B",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "HighSeverityFindingRule62BCB3FF",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "2.177.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "ResponseStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ResponseStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.6.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ResponseStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.177.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ResponseStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.177.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.177.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.6.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.177.0"
+    }
+  }
+}
