@@ -13,7 +13,7 @@ export const config = {
    * ⚠️  IMPORTANTE: Cambia esto por tu email antes de desplegar.
    *                 Recibirás un email de confirmación de AWS.
    */
-  alertEmail: "kevinlupera@gmail.com",
+  alertEmail: "correo@gmail.com",
 
   /**
    * Región de AWS donde se despliega la solución completa.
