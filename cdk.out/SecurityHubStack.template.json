@@ -1,0 +1,58 @@
+{
+ "Description": "Security Hub con estándar AWS Foundational Security Best Practices",
+ "Resources": {
+  "SecurityHub": {
+   "Type": "AWS::SecurityHub::Hub",
+   "Properties": {
+    "AutoEnableControls": true,
+    "EnableDefaultStandards": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "SecurityHubStack/SecurityHub"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXFSw5AMBAA0LPYt4NG4gA21hxA2hoxPpV0OkTE3S28zTNQ1jUUmb1Y+3HVGzl4+mT9quzFA6OXSOmexUEzhVacaqbQIR8SPb4qHCPCwvlpDJQVFNnCRDpKSLQjdP8fuBdveGQAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "SecurityHubStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

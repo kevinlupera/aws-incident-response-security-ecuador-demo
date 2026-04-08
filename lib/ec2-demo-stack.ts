@@ -28,7 +28,7 @@ export class EC2DemoStack extends cdk.Stack {
     // Security Group inicial con reglas normales (lo que tendrá ANTES del ataque)
     const demoSG = new ec2.SecurityGroup(this, 'DemoInstanceSG', {
       vpc,
-      description: 'SG inicial de la instancia demo — será reemplazado al aislarla',
+      description: 'SG inicial de la instancia demo - sera reemplazado al aislarla',
       allowAllOutbound: true,
     });
 

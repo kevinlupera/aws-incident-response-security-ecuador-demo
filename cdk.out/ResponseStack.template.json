@@ -1,0 +1,256 @@
+{
+ "Description": "Regla EventBridge + Lambda de aislamiento automático de recursos",
+ "Resources": {
+  "IsolationLambdaRole3A5917D9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Rol con mínimo privilegio para la Lambda de aislamiento automático",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "incident-response-lambda-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ResponseStack/IsolationLambdaRole/Resource"
+   }
+  },
+  "IsolationLambdaRoleDefaultPolicy21098625": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:CreateSecurityGroup",
+        "ec2:CreateTags",
+        "ec2:DescribeInstances",
+        "ec2:DescribeSecurityGroups",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:RevokeSecurityGroupEgress"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "EC2QuarantinePermissions"
+      },
+      {
+       "Action": [
+        "iam:AttachUserPolicy",
+        "iam:CreatePolicy",
+        "iam:GetUser"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "IAMQuarantinePermissions"
+      },
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "NotificationStack:ExportsOutputRefSecurityAlertTopic8D84EA7A77A8D013"
+       },
+       "Sid": "SNSPublishAlerts"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IsolationLambdaRoleDefaultPolicy21098625",
+    "Roles": [
+     {
+      "Ref": "IsolationLambdaRole3A5917D9"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ResponseStack/IsolationLambdaRole/DefaultPolicy/Resource"
+   }
+  },
+  "IsolationLambdaLogGroup1BB3FD4B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/incident-response-isolate-resource",
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ResponseStack/IsolationLambdaLogGroup/Resource"
+   }
+  },
+  "IsolationLambda633FFA8B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-600627330313-us-east-1",
+     "S3Key": "8b2a7065942991e3e171cc947a8a0f0fa0252cfc2feccf45a64f01129881b00d.zip"
+    },
+    "Description": "Aisla automáticamente recursos comprometidos detectados por GuardDuty",
+    "Environment": {
+     "Variables": {
+      "SNS_TOPIC_ARN": {
+       "Fn::ImportValue": "NotificationStack:ExportsOutputRefSecurityAlertTopic8D84EA7A77A8D013"
+      },
+      "MIN_SEVERITY": "7",
+      "AWS_REGION_NAME": "us-east-1"
+     }
+    },
+    "FunctionName": "incident-response-isolate-resource",
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "IsolationLambdaLogGroup1BB3FD4B"
+     }
+    },
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "IsolationLambdaRole3A5917D9",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "IsolationLambdaRoleDefaultPolicy21098625",
+    "IsolationLambdaRole3A5917D9"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ResponseStack/IsolationLambda/Resource",
+    "aws:asset:path": "asset.8b2a7065942991e3e171cc947a8a0f0fa0252cfc2feccf45a64f01129881b00d",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "HighSeverityFindingRule62BCB3FF": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Dispara respuesta automática ante hallazgos de GuardDuty de alta severidad (>=7)",
+    "EventPattern": {
+     "source": [
+      "aws.guardduty"
+     ],
+     "detail-type": [
+      "GuardDuty Finding"
+     ],
+     "detail": {
+      "severity": [
+       {
+        "numeric": [
+         ">=",
+         7
+        ]
+       }
+      ]
+     }
+    },
+    "Name": "guardduty-high-severity-findings",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "IsolationLambda633FFA8B",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "RetryPolicy": {
+       "MaximumRetryAttempts": 2
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ResponseStack/HighSeverityFindingRule/Resource"
+   }
+  },
+  "HighSeverityFindingRuleAllowEventRuleResponseStackIsolationLambda4DBF33CC47E9D521": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IsolationLambda633FFA8B",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "HighSeverityFindingRule62BCB3FF",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ResponseStack/HighSeverityFindingRule/AllowEventRuleResponseStackIsolationLambda4DBF33CC"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/z2OwWrDMBBEvyX39TZxCjk3geZSSnE+wCjyxqwtr4pXSihC/17kuD29WYaZnRp3hwNuN+ahle3GyvEV0yUYO4J5aJvYTJga7whON1n45R3bn3I+VQbne8X04fvz7ON3cf50Bmema2da8R0Nip8L3qPYwF5A961RpaD4VgC6x2O0I4WjUVqjmE43+U+UrzRPrMpeMtCdJCimJq4Do6OcoSH1cbYES+0lmJ6lX/zVyFAG4aAv97rG3StuN4MyV3OUwBNh8+Qvq4Wx9h0BAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "ResponseStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

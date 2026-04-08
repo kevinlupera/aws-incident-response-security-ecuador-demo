@@ -1,0 +1,185 @@
+{
+ "Description": "Instancia EC2 víctima para demostrar el aislamiento automático en vivo",
+ "Resources": {
+  "DemoInstanceSGD8F010B2": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SG inicial de la instancia demo - sera reemplazado al aislarla",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "HTTPS entrante simulado",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "VpcId": "vpc-0d93a93311ca7b6c3"
+   },
+   "Metadata": {
+    "aws:cdk:path": "EC2DemoStack/DemoInstanceSG/Resource"
+   }
+  },
+  "DemoInstanceRoleDC7CF6B9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EC2DemoStack/DemoInstanceRole/Resource"
+   }
+  },
+  "DemoInstanceInstanceProfile5AC972E6": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "DemoInstanceRoleDC7CF6B9"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "EC2DemoStack/DemoInstance/InstanceProfile"
+   }
+  },
+  "DemoInstance8BACA982": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "IamInstanceProfile": {
+     "Ref": "DemoInstanceInstanceProfile5AC972E6"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.micro",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "DemoInstanceSGD8F010B2",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": "subnet-0f454ae2d27150e80",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "demo-victim-instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "DemoInstanceRoleDC7CF6B9"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "EC2DemoStack/DemoInstance/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOzQqDMBCEn8V73Goo+AA9lJ4q+gAljSusP4lskkoJefeirYeeZuYbBkZCWVVQZGp1ue7GfKInxNYrPYoGnQ2sUajVPSJqCbFFHZj8+8o2LOLSm39wM84ro3FrDp8EqRliY6cdH3rUNdueJkxpg7ViNaNH3sI9+CX4ffM7koSxHcLgTi8poTxDkQ2OKOdgPM0IzVc/U+mdA9MAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "EC2DemoStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "DemoInstanceId": {
+   "Description": "ID de la instancia EC2 víctima para el demo de aislamiento",
+   "Value": {
+    "Ref": "DemoInstance8BACA982"
+   },
+   "Export": {
+    "Name": "DemoEC2InstanceId"
+   }
+  },
+  "DemoInstanceSGId": {
+   "Description": "SG original de la instancia (antes del aislamiento)",
+   "Value": {
+    "Fn::GetAtt": [
+     "DemoInstanceSGD8F010B2",
+     "GroupId"
+    ]
+   },
+   "Export": {
+    "Name": "DemoEC2OriginalSGId"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
