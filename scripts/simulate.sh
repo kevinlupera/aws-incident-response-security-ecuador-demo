@@ -71,11 +71,7 @@ fi
 echo -e "  ${GREEN}✅ GuardDuty Detector ID : ${BOLD}${DETECTOR_ID}${NC}"
 
 # Instance ID de la instancia víctima (output del EC2DemoStack)
-INSTANCE_ID=$(aws cloudformation describe-stacks \
-  --stack-name EC2DemoStack \
-  --query "Stacks[0].Outputs[?OutputKey=='DemoInstanceId'].OutputValue" \
-  --output text \
-  --region "${CURRENT_REGION}" 2>/dev/null || echo "")
+INSTANCE_ID="i-036a4b05be14d6611"
 
 if [ -z "${INSTANCE_ID}" ] || [ "${INSTANCE_ID}" = "None" ]; then
   echo -e "${RED}❌ No se encontró la instancia EC2 de demo.${NC}"
